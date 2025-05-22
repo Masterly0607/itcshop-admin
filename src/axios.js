@@ -1,13 +1,13 @@
+// Axios(API Bodyguard) = protects backend API requests(Controls what data the user can access.) =  Adds your token to every API request (Authorization: Bearer. If token is invalid/expired → log you out and send to login.
 import axios from 'axios'
 import { useUserStore } from './stores/userStore'
-import { useRouter } from 'vue-router'
+import router from '@/router'
 
-const router = useRouter()
 const axiosClient = axios.create({
   baseURL: `${import.meta.env.VITE_API_BASE_URL}/api`,
 })
 
-// Before every request is sent, it adds your token to the headers like this: Authorization: Bearer YOUR_TOKEN. So Laravel knows who is making the request (which user is logged in).
+// Registers a middleware that runs before every request. Before Axios sends anything to the server, let me add the token.
 axiosClient.interceptors.request.use((config) => {
   const userStore = useUserStore()
 

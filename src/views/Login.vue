@@ -1,14 +1,12 @@
 <template>
   <section>
-    <GuestLayout title="Sign Into Your Account">
+    <GuestLayout title="Admin Login">
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <p v-if="errorMsg" class="text-red-500 text-sm mb-4 text-center">{{ errorMsg }}</p>
 
         <form class="space-y-6" method="POST" @submit.prevent="login">
           <div>
-            <label for="email" class="block text-sm/6 font-medium text-gray-900"
-              >Email address</label
-            >
+            <label for="email" class="block text-sm/6 font-medium text-gray-900">Email</label>
             <div class="mt-2">
               <input
                 v-model="user.email"
@@ -17,7 +15,7 @@
                 id="email"
                 autocomplete="email"
                 required
-                class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm/6"
               />
             </div>
           </div>
@@ -31,7 +29,7 @@
                 name="password"
                 id="password"
                 required
-                class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-primary sm:text-sm/6"
               />
             </div>
           </div>
@@ -43,7 +41,7 @@
                     v-model="user.remember"
                     type="checkbox"
                     checked
-                    class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-slate-300 checked:bg-indigo-800 checked:border-indigo-800"
+                    class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-slate-300 checked:bg-primary checked:border-primary"
                     id="check-2"
                   />
                   <span
@@ -73,7 +71,7 @@
             <div class="text-sm">
               <RouterLink
                 :to="{ name: 'requestPassword' }"
-                class="font-semibold text-indigo-600 hover:text-indigo-500"
+                class="font-semibold text-primary hover:underline"
                 >Forgot password?</RouterLink
               >
             </div>
@@ -86,7 +84,7 @@
                 'cursor-not-allowed': loading,
               }"
               type="submit"
-              class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              class="btn btn-primary w-full font-semibold text-white"
             >
               <span class="loading loading-spinner loading-xs mr-2" v-if="loading"></span>
               Sign in

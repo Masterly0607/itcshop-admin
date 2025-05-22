@@ -1,3 +1,4 @@
+// index.js(Page Gatekeeper) = Controls what page the user can go to.  If user is logged in → allow to enter dashboard, products.  If not logged in → block and send to login page. f already logged in → block /login page
 import { createRouter, createWebHistory } from 'vue-router'
 import Dashboard from '@/views/Dashboard.vue'
 import Login from '@/views/Login.vue'
@@ -66,7 +67,7 @@ const router = createRouter({
   ],
 })
 
-// Handle Unauth users to redirect to login page
+// router.beforeEach(Page Guard Function) = this function runs before the user goes to any route in your Vue app.
 // to(Target Route) = This is the route the user wants to visit.
 // from(Current Route) = This is the page the user is currently on, before navigating.
 // next(Decide what to do) = What to do next (let them go or block)
@@ -81,7 +82,7 @@ router.beforeEach((to, from, next) => {
   else if (to.meta.requiresGuest && userStore.token) {
     next({ name: 'app.dashboard' })
   }
-  // No meta → public page run normally
+  // User has token & goes to public page (no meta)
   else {
     next()
   }
