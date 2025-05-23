@@ -1,5 +1,5 @@
 <template>
-  <div v-if="currentUser.id" class="min-h-full flex bg-gray-200">
+  <div class="flex min-h-full">
     <!-- Sidebar -->
     <Sidebar :class="{ '-ml-[200px]': !sidebarOpened }" />
     <div class="flex-1">
@@ -9,12 +9,12 @@
       </main>
     </div>
   </div>
-  <div v-else class="flex justify-center items-center min-h-screen bg-black/10 text-black">
+  <!-- <div  class="flex justify-center items-center min-h-screen bg-black/10 text-black">
     <div class="flex flex-col items-center">
       <div class="loading loading-dots loading-xl"></div>
       <div>Please Wait...</div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script setup>
@@ -24,7 +24,7 @@ import Sidebar from './Sidebar.vue'
 import Navbar from './Navbar.vue'
 import { useUserStore } from '@/stores/userStore'
 const userStore = useUserStore()
-const currentUser = computed(() => userStore.data)
+// const currentUser = computed(() => userStore.data)
 
 const sidebarOpened = ref(true)
 function toggleSidebar() {

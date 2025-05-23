@@ -28,7 +28,7 @@
               />
             </div>
           </div>
-          <div class="ml-2 text-sm">{{ userStore.data.name }}</div>
+          <div class="ml-2 text-sm">{{ userStore.data?.name }}</div>
 
           <ul
             tabindex="0"
