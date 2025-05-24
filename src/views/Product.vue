@@ -9,8 +9,7 @@
       <div class="flex justify-between border-b-2 pb-3 items-center">
         <div class="flex items-center">
           <span class="whitespace-nowrap mr-3">Per Page</span>
-          <select v-model="perPage" class="select" @change="getProducts(null)">
-            <option value="5">5</option>
+          <select v-model="perPage" class="select" @change="getProducts()">
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="20">20</option>
@@ -24,7 +23,7 @@
             placeholder="Type here to Search Products"
             class="input"
             v-model="search"
-            @change="getProducts(null)"
+            @change="getProducts()"
           />
         </div>
       </div>
@@ -100,8 +99,8 @@ const meta = computed(() => productStore.meta)
 onMounted(() => {
   getProducts()
 })
-async function getProducts() {
-  await productStore.getProducts()
+async function getProducts(searchText = search.value, per = perPage.value) {
+  await productStore.getProducts(searchText, 1, per) // why put 1 ? If we don't put one, when we search in page3, the data of search will match only page3. What if data of search exist in page1 or page2? So, we reset to page1
 }
 async function getForPage(ev, link) {
   ev.preventDefault() // Prevent default <a href> behavior
