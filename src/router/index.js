@@ -5,7 +5,7 @@ import Login from '@/views/Login.vue'
 import RequestPasswordReset from '@/views/RequestPasswordReset.vue'
 import ResetPassword from '@/views/ResetPassword.vue'
 import AppLayout from '@/components/AppLayout.vue'
-import Product from '@/views/Product.vue'
+import Product from '@/views/product/Products.vue'
 import { useUserStore } from '@/stores/userStore'
 import NotFound from '@/views/NotFound.vue'
 
