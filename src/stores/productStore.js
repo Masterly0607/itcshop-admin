@@ -44,28 +44,39 @@ export const useProductStore = defineStore('product', {
       }
     },
 
-    // Add Product
-    // async createProduct(productData) {
-    //   this.loading = true
-    //   try {
-    //     const response = await axiosClient.post('/product', productData)
-    //     return response
-    //   } catch (error) {
-    //     console.error('Failed to create product:', error)
-    //     throw error
-    //   } finally {
-    //     this.loading = false
-    //   }
-    // },
+    // Create Product
+    async createProduct(formData) {
+      this.loading = true
+      try {
+        const response = await axiosClient.post('/product', formData)
+        return response
+      } catch (error) {
+        console.error('Failed to create product:', error)
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
 
     // Update Product
-    // async updateProduct(id, productData) {
+    // async updateProduct(id, product) {
     //   this.loading = true
     //   try {
-    //     const response = await axiosClient.put(`/product/${id}`, productData)
+    //     const form = new FormData()
+
+    //     form.append('title', product.title)
+    //     form.append('price', product.price)
+    //     form.append('description', product.description)
+
+    //     // only append image if it's a File (new upload)
+    //     if (product.image instanceof File) {
+    //       form.append('image', product.image)
+    //     }
+
+    //     const response = await axiosClient.post(`/product/${id}?_method=PUT`, form)
     //     return response
     //   } catch (error) {
-    //     console.error('Failed to update product:', error)
+    //     console.error('Update failed:', error)
     //     throw error
     //   } finally {
     //     this.loading = false

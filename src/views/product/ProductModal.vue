@@ -6,10 +6,12 @@
         <div>
           <div class="flex justify-between items-center">
             <div class="font-medium text-lg">
-              <!-- {{
-                product.value?.id ? `Update product: ${product.value.title}` : 'Create new Product'
-              }} -->
-              Create new Product
+              {{
+                product.value && product.value.id
+                  ? `Update product: ${product.value.title}`
+                  : 'Create new Product'
+              }}
+              <!-- Create new Product -->
             </div>
             <button class="btn btn-ghost btn-circle btn-sm" @click="closeModal()">
               <svg
@@ -26,18 +28,19 @@
           </div>
 
           <form class="flex flex-col gap-3 mt-10" @submit.prevent="onSubmit">
-            <input type="text" placeholder="Title" class="input w-full" />
+            <input type="text" placeholder="Title" class="input w-full" v-model="product.title" />
 
             <input
               type="file"
               class="file-input w-full"
-              @change="(e) => (product.value.image = e.target.files[0])"
+              @change="(e) => (product.image = e.target.files[0])"
             />
 
             <textarea
               rows="4"
               placeholder="Description"
               class="textarea textarea-bordered w-full"
+              v-model="product.description"
             ></textarea>
 
             <label class="input w-full">
@@ -56,7 +59,7 @@
                 />
               </svg>
 
-              <input type="number" required placeholder="Price" />
+              <input type="number" required placeholder="Price" v-model.number="product.price" />
             </label>
 
             <div class="flex justify-end gap-2 mt-5">
@@ -72,10 +75,10 @@
 
 <script setup>
 import SpinnerComponent from '@/components/core/SpinnerComponent.vue'
-import { ref, onUpdated } from 'vue'
+import { ref, watch } from 'vue'
 import { useProductStore } from '@/stores/productStore'
 
-// Create and Update Product
+// Create Modal Component
 const modalRef = ref(null)
 function openModal() {
   modalRef.value?.showModal()
@@ -85,49 +88,67 @@ function closeModal() {
 }
 defineExpose({ openModal, closeModal })
 
+// Create and Update Product
 const loading = ref(false)
-// const props = defineProps({
-//   product: {
-//     required: true,
-//     type: Object,
-//   },
-// })
+const props = defineProps({
+  product: {
+    type: Object,
+    default: () => ({
+      id: null,
+      title: '',
+      image: '',
+      description: '',
+      price: '',
+    }),
+  },
+})
 
-// const product = ref({ ...props.product })
+const product = ref({ ...props.product }) // We have props to receive the value from parent. But why we need this? => because props can read-only, so we need to make a copy and then use it.
 
-// onUpdated(() => {
-//   product.value = { ...props.product }
-// })
+watch(
+  () => props.product,
+  (newVal) => {
+    product.value = { ...newVal }
+  },
+)
 
-// const productStore = useProductStore()
+const productStore = useProductStore()
+async function onSubmit() {
+  try {
+    loading.value = true
 
-// async function onSubmit() {
-//   try {
-//     loading.value = true
+    const form = new FormData()
+    form.append('title', product.value.title)
+    form.append('description', product.value.description)
+    form.append('price', product.value.price)
 
-//     if (product.value.id) {
-//       await productStore.updateProduct(product.value.id, product.value)
-//     } else {
-//       await productStore.createProduct(product.value)
-//     }
+    if (product.value.image instanceof File) {
+      form.append('image', product.value.image)
+    }
 
-//     await productStore.getProducts()
-//     modalRef.value.close()
-//     resetForm()
-//   } catch (error) {
-//     console.error('Submit failed:', error)
-//   } finally {
-//     loading.value = false
-//   }
-// }
+    if (product.value.id) {
+      await productStore.updateProduct(product.value.id, form)
+    } else {
+      await productStore.createProduct(form)
+    }
 
-// function resetForm() {
-//   product.value = {
-//     id: null,
-//     title: '',
-//     image: '',
-//     description: '',
-//     price: '',
-//   }
-// }
+    await productStore.getProducts()
+    modalRef.value.close()
+    resetForm()
+  } catch (error) {
+    console.error('Submit failed:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+function resetForm() {
+  product.value = {
+    id: null,
+    title: '',
+    image: '',
+    description: '',
+    price: '',
+  }
+}
 </script>
