@@ -43,5 +43,33 @@ export const useProductStore = defineStore('product', {
         this.loading = false
       }
     },
+
+    // Add Product
+    // async createProduct(productData) {
+    //   this.loading = true
+    //   try {
+    //     const response = await axiosClient.post('/product', productData)
+    //     return response
+    //   } catch (error) {
+    //     console.error('Failed to create product:', error)
+    //     throw error
+    //   } finally {
+    //     this.loading = false
+    //   }
+    // },
+
+    // Update Product
+    // async updateProduct(id, productData) {
+    //   this.loading = true
+    //   try {
+    //     const response = await axiosClient.put(`/product/${id}`, productData)
+    //     return response
+    //   } catch (error) {
+    //     console.error('Failed to update product:', error)
+    //     throw error
+    //   } finally {
+    //     this.loading = false
+    //   }
+    // },
   },
 })
