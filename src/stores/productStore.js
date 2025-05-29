@@ -7,13 +7,13 @@ export const useProductStore = defineStore('product', {
     meta: {},
   }),
   actions: {
+    // Get all products
     // search = '', page = 1, perPage = 10 = These are default values for the parameters. If u call getProducts(). It looks like this getProducts('', 1, 10)
     async getProducts(search = '', page = 1, perPage = 10, sort_field, sort_direction) {
       this.loading = true
       try {
         const response = await axiosClient.get('/product', {
           //  params: pass query parameters to your Laravel API using Axios. It create a URL like this: /product?search=phone&page=2&per_page=10. Laravel receives these values from request('search'), request('page'), and request('per_page').
-
           params: {
             search: search,
             page: page,
@@ -31,6 +31,8 @@ export const useProductStore = defineStore('product', {
         this.loading = false
       }
     },
+
+    // Get product by URL
     async getProductsByUrl(url) {
       this.loading = true
       try {
@@ -58,29 +60,18 @@ export const useProductStore = defineStore('product', {
       }
     },
 
-    // Update Product
-    // async updateProduct(id, product) {
-    //   this.loading = true
-    //   try {
-    //     const form = new FormData()
-
-    //     form.append('title', product.title)
-    //     form.append('price', product.price)
-    //     form.append('description', product.description)
-
-    //     // only append image if it's a File (new upload)
-    //     if (product.image instanceof File) {
-    //       form.append('image', product.image)
-    //     }
-
-    //     const response = await axiosClient.post(`/product/${id}?_method=PUT`, form)
-    //     return response
-    //   } catch (error) {
-    //     console.error('Update failed:', error)
-    //     throw error
-    //   } finally {
-    //     this.loading = false
-    //   }
-    // },
+    // Delete Product
+    async deleteProduct(id) {
+      this.loading = true
+      try {
+        const response = await axiosClient.delete(`/product/${id}`)
+        return response
+      } catch (error) {
+        console.error('Failed to delete product:', error)
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
   },
 })

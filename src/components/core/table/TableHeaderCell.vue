@@ -1,13 +1,12 @@
 <template>
   <th
     @click="emit('click', field)"
-    class="border-b-2 p-2 text-left cursor-pointer bg-gray-100"
+    class="border-b-2 p-2 text-left cursor-pointer bg-gray-200"
     :class="field === sortField ? 'bg-blue-50' : ''"
   >
     <div class="flex justify-between">
       <slot></slot>
       <div v-if="sortField === field" class="ml-2">
-        <!--              Sort Asc-->
         <svg
           v-if="sortDirection === 'asc'"
           xmlns="http://www.w3.org/2000/svg"

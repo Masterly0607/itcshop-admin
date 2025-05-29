@@ -1,6 +1,7 @@
 <template>
   <section>
     <dialog id="my_modal_1" class="modal" ref="modalRef">
+      <!-- what is ref? =>  access to this HTML or component from JavaScript.”-->
       <div class="modal-box">
         <SpinnerComponent v-if="loading" class="fixed inset-0 flex items-center justify-center" />
         <div>
@@ -81,7 +82,7 @@ import { useProductStore } from '@/stores/productStore'
 // Create Modal Component
 const modalRef = ref(null)
 function openModal() {
-  modalRef.value?.showModal()
+  modalRef.value?.showModal() // is a native JavaScript function for the HTML <dialog> element. because modalRef.value = dialog element
 }
 function closeModal() {
   modalRef.value?.close()
@@ -105,6 +106,7 @@ const props = defineProps({
 
 const product = ref({ ...props.product }) // We have props to receive the value from parent. But why we need this? => because props can read-only, so we need to make a copy and then use it.
 
+// ?
 watch(
   () => props.product,
   (newVal) => {
@@ -112,6 +114,7 @@ watch(
   },
 )
 
+// ?
 const productStore = useProductStore()
 async function onSubmit() {
   try {

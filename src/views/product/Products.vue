@@ -8,7 +8,7 @@
     </div>
 
     <ProductModal ref="modal" :product="currentProduct" />
-
+    <!-- why ref="modal"? => If you want to control the modal (child) from the parent, like calling openModal() or closeModal() -->
     <ProductsTable />
   </section>
 </template>
@@ -17,10 +17,11 @@
 import { ref, onMounted } from 'vue'
 import ProductModal from './ProductModal.vue'
 import { useProductStore } from '@/stores/productStore'
-import { storeToRefs } from 'pinia'
 import ProductsTable from './ProductsTable.vue'
 
-const modal = ref(null)
+const modal = ref(null) // ref for modal component so we can call openModal()
+
+// default object to use when creating/editing
 const currentProduct = ref({
   id: null,
   title: '',
@@ -29,9 +30,7 @@ const currentProduct = ref({
   price: '',
 })
 
-// ✅ Use Pinia store to get products from backend
 const productStore = useProductStore()
-const { data: products } = storeToRefs(productStore)
 
 onMounted(() => {
   productStore.getProducts()
@@ -46,10 +45,5 @@ function showAddProductModal() {
     price: '',
   }
   modal.value?.openModal()
-}
-
-function editProduct(product) {
-  currentProduct.value = { ...product }
-  modal.value?.openModal()
-}
+} // Resets form, then opens modal
 </script>
