@@ -3,6 +3,7 @@
     <RouterLink
       :to="{ name: 'app.dashboard' }"
       class="flex items-center p-2 rounded hover:bg-black/30 transition-colors"
+      exact-active-class="bg-white text-red-600 font-bold shadow-sm"
     >
       <span class="mr-2 text-gray-300">
         <HomeIcon class="w-5" />
@@ -12,6 +13,7 @@
     <RouterLink
       :to="{ name: 'app.products' }"
       class="flex items-center p-2 rounded hover:bg-black/30 transition-colors"
+      exact-active-class="bg-white text-red-600 font-bold shadow-sm"
     >
       <span class="mr-2 text-gray-300">
         <ShoppingBagIcon class="w-5" />

@@ -73,5 +73,27 @@ export const useProductStore = defineStore('product', {
         this.loading = false
       }
     },
+
+    // Update product
+    // Update Product
+    async updateProduct(id, formData) {
+      this.loading = true
+      try {
+        const response = await axiosClient.post(`/product/${id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          params: {
+            _method: 'PUT',
+          },
+        })
+        return response
+      } catch (error) {
+        console.error('Failed to update product:', error)
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
   },
 })

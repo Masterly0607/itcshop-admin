@@ -1,10 +1,10 @@
 <template>
   <section>
     <dialog id="my_modal_1" class="modal" ref="modalRef">
-      <!-- what is ref? =>  access to this HTML or component from JavaScript.”-->
+      <!-- what is ref? => access this HTML/component from JavaScript -->
       <div class="modal-box">
         <SpinnerComponent v-if="loading" class="fixed inset-0 flex items-center justify-center" />
-        <div>
+        <div v-else>
           <div class="flex justify-between items-center">
             <div class="font-medium text-lg">
               {{
@@ -31,12 +31,22 @@
           <form class="flex flex-col gap-3 mt-10" @submit.prevent="onSubmit">
             <input type="text" placeholder="Title" class="input w-full" v-model="product.title" />
 
+            <!-- Show old image if editing -->
+            <div v-if="product.value?.image && !(product.value.image instanceof File)">
+              <img
+                :src="product.value.image"
+                alt="Current Image"
+                class="w-24 h-24 object-cover mb-2 rounded"
+              />
+            </div>
+
             <input
               type="file"
               class="file-input w-full"
               @change="(e) => (product.image = e.target.files[0])"
             />
 
+            <!-- Description auto-filled -->
             <textarea
               rows="4"
               placeholder="Description"
@@ -82,7 +92,7 @@ import { useProductStore } from '@/stores/productStore'
 // Create Modal Component
 const modalRef = ref(null)
 function openModal() {
-  modalRef.value?.showModal() // is a native JavaScript function for the HTML <dialog> element. because modalRef.value = dialog element
+  modalRef.value?.showModal()
 }
 function closeModal() {
   modalRef.value?.close()
@@ -104,9 +114,9 @@ const props = defineProps({
   },
 })
 
-const product = ref({ ...props.product }) // We have props to receive the value from parent. But why we need this? => because props can read-only, so we need to make a copy and then use it.
+const product = ref({ ...props.product })
 
-// ?
+// ✅ Watch prop change and sync internal ref
 watch(
   () => props.product,
   (newVal) => {
@@ -114,7 +124,6 @@ watch(
   },
 )
 
-// ?
 const productStore = useProductStore()
 async function onSubmit() {
   try {

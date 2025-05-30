@@ -9,7 +9,7 @@
 
     <ProductModal ref="modal" :product="currentProduct" />
     <!-- why ref="modal"? => If you want to control the modal (child) from the parent, like calling openModal() or closeModal() -->
-    <ProductsTable />
+    <ProductsTable :onEdit="editProduct" />
   </section>
 </template>
 
@@ -46,4 +46,9 @@ function showAddProductModal() {
   }
   modal.value?.openModal()
 } // Resets form, then opens modal
+
+function editProduct(product) {
+  currentProduct.value = { ...product }
+  modal.value?.openModal()
+}
 </script>

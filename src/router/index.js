@@ -1,9 +1,9 @@
 // index.js(Page Gatekeeper) = Controls what page the user can go to.  If user is logged in → allow to enter dashboard, products.  If not logged in → block and send to login page. f already logged in → block /login page
 import { createRouter, createWebHistory } from 'vue-router'
 import Dashboard from '@/views/Dashboard.vue'
-import Login from '@/views/Login.vue'
-import RequestPasswordReset from '@/views/RequestPasswordReset.vue'
-import ResetPassword from '@/views/ResetPassword.vue'
+import Login from '@/views/auth/Login.vue'
+import RequestPasswordReset from '@/views/auth/RequestPasswordReset.vue'
+import ResetPassword from '@/views/auth/ResetPassword.vue'
 import AppLayout from '@/components/AppLayout.vue'
 import Product from '@/views/product/Products.vue'
 import { useUserStore } from '@/stores/userStore'

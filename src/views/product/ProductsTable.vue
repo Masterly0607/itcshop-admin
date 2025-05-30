@@ -90,7 +90,7 @@
           <tr v-for="product in products" :key="product.id">
             <td class="border-b p-2">{{ product.id }}</td>
             <td class="border-b p-2">
-              <img :src="product.image" :alt="product.name" srcset="" class="w-16" />
+              <img :src="product.image + '?t=' + Date.now()" class="w-16" />
             </td>
             <td class="border-b p-2 max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">
               {{ product.title }}
@@ -119,7 +119,7 @@
                   tabindex="0"
                   class="dropdown-content menu bg-base-100 rounded-box z-1 w-35 p-2 shadow-sm"
                 >
-                  <li>
+                  <li @click="$emit('edit', product)">
                     <a>
                       <span
                         ><svg
@@ -208,7 +208,9 @@ const products = computed(() => productStore.data)
 const meta = computed(() => productStore.meta)
 const sortField = ref('updated_at')
 const sortDirection = ref('desc')
-
+defineProps({
+  onEdit: Function, // parent will pass this
+})
 // Ok: Get all project(the parameter inside this function called the default value of the function)
 async function getProducts(
   searchText = search.value,
