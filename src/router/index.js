@@ -1,12 +1,23 @@
-// index.js(Page Gatekeeper) = Controls what page the user can go to.  If user is logged in → allow to enter dashboard, products.  If not logged in → block and send to login page. f already logged in → block /login page
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '@/stores/userStore'
+
+// Layout
+import AppLayout from '@/components/AppLayout.vue'
+
+// Pages
 import Dashboard from '@/views/Dashboard.vue'
+import Products from '@/views/product/Products.vue'
+import Categories from '@/views/categories/Categories.vue'
+import Orders from '@/views/orders/Orders.vue'
+import Users from '@/views/users/Users.vue'
+import Coupons from '@/views/coupons/Coupons.vue'
+
+// Auth Pages
 import Login from '@/views/auth/Login.vue'
 import RequestPasswordReset from '@/views/auth/RequestPasswordReset.vue'
 import ResetPassword from '@/views/auth/ResetPassword.vue'
-import AppLayout from '@/components/AppLayout.vue'
-import Product from '@/views/product/Products.vue'
-import { useUserStore } from '@/stores/userStore'
+
+// Error Page
 import NotFound from '@/views/NotFound.vue'
 
 const router = createRouter({
@@ -18,77 +29,54 @@ const router = createRouter({
     },
     {
       path: '/app',
-      name: 'app',
       component: AppLayout,
-
-      // Handle Unauth users to redirect to login page
-      meta: {
-        requiresAuth: true,
-      },
+      meta: { requiresAuth: true },
       children: [
-        {
-          path: 'dashboard',
-          name: 'app.dashboard',
-          component: Dashboard,
-        },
-        {
-          path: 'products',
-          name: 'app.products',
-          component: Product,
-        },
+        { path: 'dashboard', name: 'app.dashboard', component: Dashboard }, // ✅ Dashboard (stats)
+        { path: 'products', name: 'app.products', component: Products }, // ✅ Manage products
+        { path: 'categories', name: 'app.categories', component: Categories }, // ✅ Manage categories
+        { path: 'orders', name: 'app.orders', component: Orders }, // ✅ Manage orders
+        { path: 'users', name: 'app.users', component: Users }, // ✅ Manage users & customers
+        { path: 'coupons', name: 'app.coupons', component: Coupons }, // ✅ Manage coupons
       ],
     },
-
     {
       path: '/login',
       name: 'login',
-      meta: {
-        requiresGuest: true,
-      },
       component: Login,
+      meta: { requiresGuest: true },
     },
     {
       path: '/request-password',
       name: 'requestPassword',
-      meta: {
-        requiresGuest: true,
-      },
       component: RequestPasswordReset,
+      meta: { requiresGuest: true },
     },
     {
       path: '/reset-password/:token',
       name: 'resetPassword',
-      meta: {
-        requiresGuest: true,
-      },
       component: ResetPassword,
+      meta: { requiresGuest: true },
     },
     {
-      path: '/:pathMatch(.*)',
+      path: '/:pathMatch(.*)*',
       name: 'notfound',
       component: NotFound,
     },
   ],
 })
 
-// router.beforeEach(Page Guard Function) = this function runs before the user goes to any route in your Vue app.
-// to(Target Route) = This is the route the user wants to visit.
-// from(Current Route) = This is the page the user is currently on, before navigating.
-// next(Decide what to do) = What to do next (let them go or block)
+// ✅ Navigation guard
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore()
 
-  //  Not logged in user is trying to access protected page, so it redirects to login page
   if (to.meta.requiresAuth && !userStore.token) {
     next({ name: 'login' })
-  }
-  // Block access to guest pages: if user is logged in, they cannot go to route that has requiresGuest
-  else if (to.meta.requiresGuest && userStore.token) {
+  } else if (to.meta.requiresGuest && userStore.token) {
     next({ name: 'app.dashboard' })
-  }
-  // User has token & goes to public page (no meta)
-  else {
+  } else {
     next()
   }
 })
+
 export default router

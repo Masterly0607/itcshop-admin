@@ -1,3 +1,4 @@
+<!-- ✅ Products.vue -->
 <template>
   <section>
     <div class="flex items-center justify-between">
@@ -7,30 +8,27 @@
       </button>
     </div>
 
-    <ProductModal ref="modal" :product="currentProduct" />
-    <!-- why ref="modal"? => If you want to control the modal (child) from the parent, like calling openModal() or closeModal() -->
+    <ProductModal ref="modal" :product="currentProduct" :key="currentProduct.id ?? 'new'" />
     <ProductsTable :onEdit="editProduct" />
   </section>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import ProductModal from './ProductModal.vue'
 import { useProductStore } from '@/stores/productStore'
 import ProductsTable from './ProductsTable.vue'
 
-const modal = ref(null) // ref for modal component so we can call openModal()
+const modal = ref(null)
+const productStore = useProductStore()
 
-// default object to use when creating/editing
 const currentProduct = ref({
   id: null,
   title: '',
-  image: '',
+  images: [],
   description: '',
   price: '',
 })
-
-const productStore = useProductStore()
 
 onMounted(() => {
   productStore.getProducts()
@@ -40,15 +38,21 @@ function showAddProductModal() {
   currentProduct.value = {
     id: null,
     title: '',
-    image: '',
+    images: [],
     description: '',
     price: '',
   }
   modal.value?.openModal()
-} // Resets form, then opens modal
+}
 
-function editProduct(product) {
-  currentProduct.value = { ...product }
+async function editProduct(product) {
+  currentProduct.value = JSON.parse(
+    JSON.stringify({
+      ...product,
+      images: product.images ?? [],
+    }),
+  )
+  await nextTick()
   modal.value?.openModal()
 }
 </script>

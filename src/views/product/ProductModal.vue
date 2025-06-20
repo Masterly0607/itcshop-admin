@@ -1,141 +1,203 @@
 <template>
   <section>
-    <dialog id="my_modal_1" class="modal" ref="modalRef">
-      <!-- what is ref? => access this HTML/component from JavaScript -->
-      <div class="modal-box">
-        <SpinnerComponent v-if="loading" class="fixed inset-0 flex items-center justify-center" />
-        <div v-else>
-          <div class="flex justify-between items-center">
-            <div class="font-medium text-lg">
-              {{
-                product.value && product.value.id
-                  ? `Update product: ${product.value.title}`
-                  : 'Create new Product'
-              }}
-              <!-- Create new Product -->
-            </div>
-            <button class="btn btn-ghost btn-circle btn-sm" @click="closeModal()">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 16 16"
-                fill="currentColor"
-                class="size-7"
+    <BaseModal
+      ref="modalRef"
+      :title="product.id ? `Update product: ${product.title}` : 'Create new Product'"
+    >
+      <SpinnerComponent v-if="loading" class="fixed inset-0 flex items-center justify-center" />
+
+      <form v-else class="flex flex-col gap-3" @submit.prevent="onSubmit">
+        <!-- Title -->
+        <input type="text" placeholder="Title" class="input w-full" v-model="product.title" />
+
+        <!-- Image Preview -->
+        <div v-if="previewImages.length" class="mb-3">
+          <div class="flex gap-2 flex-wrap">
+            <div
+              v-for="(img, i) in previewImages"
+              :key="i"
+              class="relative w-24 h-24 border rounded overflow-hidden"
+            >
+              <img :src="img" class="w-full h-full object-cover" />
+              <button
+                class="absolute top-0 right-0 text-white bg-red-600 rounded-bl px-1 text-xs"
+                @click.prevent="removeImage(i)"
               >
-                <path
-                  d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z"
-                />
-              </svg>
-            </button>
+                ✕
+              </button>
+            </div>
           </div>
-
-          <form class="flex flex-col gap-3 mt-10" @submit.prevent="onSubmit">
-            <input type="text" placeholder="Title" class="input w-full" v-model="product.title" />
-
-            <!-- Show old image if editing -->
-            <div v-if="product.value?.image && !(product.value.image instanceof File)">
-              <img
-                :src="product.value.image"
-                alt="Current Image"
-                class="w-24 h-24 object-cover mb-2 rounded"
-              />
-            </div>
-
-            <input
-              type="file"
-              class="file-input w-full"
-              @change="(e) => (product.image = e.target.files[0])"
-            />
-
-            <!-- Description auto-filled -->
-            <textarea
-              rows="4"
-              placeholder="Description"
-              class="textarea textarea-bordered w-full"
-              v-model="product.description"
-            ></textarea>
-
-            <label class="input w-full">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="size-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                />
-              </svg>
-
-              <input type="number" required placeholder="Price" v-model.number="product.price" />
-            </label>
-
-            <div class="flex justify-end gap-2 mt-5">
-              <div class="btn" @click="closeModal()">Cancel</div>
-              <input type="submit" value="Submit" class="btn btn-primary text-white" />
-            </div>
-          </form>
         </div>
-      </div>
-    </dialog>
+
+        <!-- Upload -->
+        <input
+          type="file"
+          class="file-input w-full"
+          multiple
+          accept="image/*"
+          @change="handleImageUpload"
+        />
+
+        <!-- Description -->
+        <textarea
+          rows="4"
+          placeholder="Description"
+          class="textarea textarea-bordered w-full"
+          v-model="product.description"
+        ></textarea>
+
+        <!-- Price -->
+        <label class="input w-full">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M12 6v12m-3-2.818L12 18l3-2.818m0-6.364L12 6l-3 2.818"
+            />
+          </svg>
+          <input type="number" required placeholder="Price" v-model.number="product.price" />
+        </label>
+
+        <!-- Actions -->
+        <div class="flex justify-end gap-2 mt-5">
+          <div class="btn" @click="closeModal()">Cancel</div>
+          <input type="submit" value="Submit" class="btn btn-primary text-white" />
+        </div>
+      </form>
+    </BaseModal>
   </section>
 </template>
 
 <script setup>
+// your exact script — no change
 import SpinnerComponent from '@/components/core/SpinnerComponent.vue'
+import BaseModal from '@/components/core/modal/BaseModal.vue'
 import { ref, watch } from 'vue'
 import { useProductStore } from '@/stores/productStore'
 
-// Create Modal Component
 const modalRef = ref(null)
-function openModal() {
-  modalRef.value?.showModal()
-}
-function closeModal() {
-  modalRef.value?.close()
-}
-defineExpose({ openModal, closeModal })
-
-// Create and Update Product
 const loading = ref(false)
+
+const productStore = useProductStore()
+const removedImageIds = ref([])
+
 const props = defineProps({
   product: {
     type: Object,
     default: () => ({
       id: null,
       title: '',
-      image: '',
+      images: [],
       description: '',
       price: '',
     }),
   },
 })
 
-const product = ref({ ...props.product })
+const product = ref({
+  id: null,
+  title: '',
+  images: [],
+  description: '',
+  price: '',
+})
+const previewImages = ref([])
 
-// ✅ Watch prop change and sync internal ref
+defineExpose({ openModal, closeModal })
+
+function openModal() {
+  modalRef.value?.openModal()
+}
+function closeModal() {
+  modalRef.value?.closeModal()
+}
+
 watch(
   () => props.product,
   (newVal) => {
-    product.value = { ...newVal }
+    product.value = {
+      id: newVal.id ?? null,
+      title: newVal.title ?? '',
+      images: Array.isArray(newVal.images) ? [...newVal.images] : [],
+      description: newVal.description ?? '',
+      price: newVal.price ?? '',
+    }
+    removedImageIds.value = []
+    updatePreviewImages()
   },
+  { immediate: true },
 )
 
-const productStore = useProductStore()
+function updatePreviewImages() {
+  previewImages.value = product.value.images
+    .map((img) => {
+      if (typeof img === 'string') return img
+      if (img instanceof File) return URL.createObjectURL(img)
+      if (typeof img === 'object' && img.image) return img.image
+      return ''
+    })
+    .filter(Boolean)
+}
+
+function handleImageUpload(e) {
+  const files = Array.from(e.target.files || [])
+  const existing = product.value.images.filter((img) => img instanceof File)
+  const newFiles = files.filter(
+    (file) => !existing.some((f) => f.name === file.name && f.size === file.size),
+  )
+
+  product.value.images = [
+    ...product.value.images.filter((img) => typeof img === 'string' || img instanceof File),
+    ...newFiles,
+  ]
+  updatePreviewImages()
+}
+
+function removeImage(index) {
+  const removed = product.value.images[index]
+  if (typeof removed === 'object' && removed.id) {
+    removedImageIds.value.push(removed.id)
+  }
+  product.value.images.splice(index, 1)
+  previewImages.value.splice(index, 1)
+}
+
+function resetForm() {
+  product.value = {
+    id: null,
+    title: '',
+    images: [],
+    description: '',
+    price: '',
+  }
+  previewImages.value = []
+  removedImageIds.value = []
+}
+
 async function onSubmit() {
   try {
     loading.value = true
-
     const form = new FormData()
     form.append('title', product.value.title)
     form.append('description', product.value.description)
     form.append('price', product.value.price)
 
-    if (product.value.image instanceof File) {
-      form.append('image', product.value.image)
+    product.value.images.forEach((img, i) => {
+      if (img instanceof File) {
+        form.append(`images[${i}]`, img)
+      }
+    })
+
+    if (product.value.id && removedImageIds.value.length > 0) {
+      form.append('removed_image_ids', JSON.stringify(removedImageIds.value))
     }
 
     if (product.value.id) {
@@ -145,22 +207,12 @@ async function onSubmit() {
     }
 
     await productStore.getProducts()
-    modalRef.value.close()
+    closeModal()
     resetForm()
-  } catch (error) {
-    console.error('Submit failed:', error)
+  } catch (e) {
+    console.error('Failed to submit', e)
   } finally {
     loading.value = false
-  }
-}
-
-function resetForm() {
-  product.value = {
-    id: null,
-    title: '',
-    image: '',
-    description: '',
-    price: '',
   }
 }
 </script>

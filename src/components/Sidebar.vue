@@ -1,46 +1,53 @@
 <template>
-  <div class="w-[200px] bg-yellow-600 text-white py-4 px-2 transition-all">
+  <aside
+    class="w-[220px] min-h-screen bg-yellow-600 text-white p-4 space-y-1 transition-all duration-200"
+    :class="{ '-ml-[220px]': !sidebarOpened }"
+  >
     <RouterLink
-      :to="{ name: 'app.dashboard' }"
-      class="flex items-center p-2 rounded hover:bg-black/30 transition-colors"
-      exact-active-class="bg-white text-red-600 font-bold shadow-sm"
+      v-for="item in navItems"
+      :key="item.name"
+      :to="item.to"
+      class="flex items-center p-2 rounded transition"
+      :class="[
+        $route.name === item.name
+          ? 'bg-white text-yellow-600 font-semibold shadow cursor-default'
+          : 'hover:bg-black/20 cursor-pointer',
+      ]"
     >
-      <span class="mr-2 text-gray-300">
-        <HomeIcon class="w-5" />
-      </span>
-      <span class="text-xs"> Dashboard </span>
+      <component
+        :is="item.icon"
+        class="w-5 mr-2"
+        :class="$route.name === item.name ? 'text-yellow-600' : 'text-white'"
+      />
+      <span class="text-sm">{{ item.label }}</span>
     </RouterLink>
-    <RouterLink
-      :to="{ name: 'app.products' }"
-      class="flex items-center p-2 rounded hover:bg-black/30 transition-colors"
-      exact-active-class="bg-white text-red-600 font-bold shadow-sm"
-    >
-      <span class="mr-2 text-gray-300">
-        <ShoppingBagIcon class="w-5" />
-      </span>
-      <span class="text-xs"> Product </span>
-    </RouterLink>
-    <RouterLink
-      :to="{ name: 'app.dashboard' }"
-      class="flex items-center p-2 rounded hover:bg-black/30 transition-colors"
-    >
-      <span class="mr-2 text-gray-300">
-        <UsersIcon class="w-5" />
-      </span>
-      <span class="text-xs"> Users </span>
-    </RouterLink>
-    <RouterLink
-      :to="{ name: 'app.dashboard' }"
-      class="flex items-center p-2 rounded hover:bg-black/30 transition-colors"
-    >
-      <span class="mr-2 text-gray-300">
-        <ChartBarIcon class="w-5" />
-      </span>
-      <span class="text-xs">Report</span>
-    </RouterLink>
-  </div>
+  </aside>
 </template>
 
 <script setup>
-import { HomeIcon, UsersIcon, ChartBarIcon, ShoppingBagIcon } from '@heroicons/vue/24/solid'
+import { useRoute } from 'vue-router'
+import {
+  HomeIcon,
+  ShoppingBagIcon,
+  Squares2X2Icon,
+  TruckIcon,
+  UsersIcon,
+  TagIcon,
+} from '@heroicons/vue/24/solid'
+defineProps({ sidebarOpened: Boolean })
+const $route = useRoute()
+
+const navItems = [
+  { name: 'app.dashboard', to: { name: 'app.dashboard' }, icon: HomeIcon, label: 'Dashboard' },
+  { name: 'app.products', to: { name: 'app.products' }, icon: ShoppingBagIcon, label: 'Products' },
+  {
+    name: 'app.categories',
+    to: { name: 'app.categories' },
+    icon: Squares2X2Icon,
+    label: 'Categories',
+  },
+  { name: 'app.orders', to: { name: 'app.orders' }, icon: TruckIcon, label: 'Orders' },
+  { name: 'app.users', to: { name: 'app.users' }, icon: UsersIcon, label: 'Users' },
+  { name: 'app.coupons', to: { name: 'app.coupons' }, icon: TagIcon, label: 'Coupons' },
+]
 </script>
