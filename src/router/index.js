@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 
 // Layout
-import AppLayout from '@/components/AppLayout.vue'
+import AppLayout from '@/components/layouts/AppLayout.vue'
 
 // Pages
 import Dashboard from '@/views/Dashboard.vue'

@@ -1,12 +1,12 @@
 <template>
-  <div class="flex min-h-full">
+  <div class="flex min-h-screen">
     <!-- Sidebar -->
     <Sidebar :sidebarOpened="sidebarOpened" />
 
     <!-- Main content -->
-    <div class="flex-1">
+    <div class="flex-1 flex flex-col">
       <Navbar @toggle-sidebar="toggleSidebar" />
-      <main class="p-6">
+      <main class="flex-1 p-6 overflow-auto">
         <RouterView />
       </main>
     </div>
@@ -15,8 +15,8 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import Sidebar from './Sidebar.vue'
-import Navbar from './Navbar.vue'
+import Sidebar from '../Sidebar.vue'
+import Navbar from '../Navbar.vue'
 import { useUserStore } from '@/stores/userStore'
 
 const sidebarOpened = ref(true)

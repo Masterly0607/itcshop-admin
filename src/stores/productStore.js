@@ -1,21 +1,23 @@
 import { defineStore } from 'pinia'
 import axiosClient from '@/axios'
+
 export const useProductStore = defineStore('product', {
   state: () => ({
     data: [],
     loading: false,
     meta: {},
   }),
+
   actions: {
-    // Get all products
-    // search = '', page = 1, perPage = 10 = These are default values for the parameters. If u call getProducts(). It looks like this getProducts('', 1, 10)
+    // ✅ Get paginated products with search & sort
     async getProducts(
-      search,
+      search = '',
       page = 1,
       perPage = 10,
       sortField = 'updated_at',
       sortDirection = 'desc',
     ) {
+      this.loading = true
       try {
         const res = await axiosClient.get('/products', {
           params: {
@@ -29,58 +31,45 @@ export const useProductStore = defineStore('product', {
         this.data = res.data.data
         this.meta = res.data.meta
       } catch (error) {
-        console.error('Failed to load products:', error)
+        console.error('❌ Failed to load products:', error)
+      } finally {
+        this.loading = false
       }
     },
 
-    // Get product by URL
+    // ✅ Get products using full pagination URL
     async getProductsByUrl(url) {
       this.loading = true
       try {
-        const response = await axiosClient.get(url)
-        this.data = response.data.data
-        this.meta = response.data.meta
+        const res = await axiosClient.get(url)
+        this.data = res.data.data
+        this.meta = res.data.meta
       } catch (error) {
-        console.error('Failed to fetch page:', error)
+        console.error('❌ Failed to fetch page:', error)
       } finally {
         this.loading = false
       }
     },
 
-    // Create Product
+    // ✅ Create new product
     async createProduct(formData) {
       this.loading = true
       try {
-        const response = await axiosClient.post('/products', formData)
-        return response
+        const res = await axiosClient.post('/products', formData)
+        return res
       } catch (error) {
-        console.error('Failed to create product:', error)
+        console.error('❌ Failed to create product:', error)
         throw error
       } finally {
         this.loading = false
       }
     },
 
-    // Delete Product
-    async deleteProduct(id) {
-      this.loading = true
-      try {
-        const response = await axiosClient.delete(`/products/${id}`)
-        return response
-      } catch (error) {
-        console.error('Failed to delete product:', error)
-        throw error
-      } finally {
-        this.loading = false
-      }
-    },
-
-    // Update product
-    // Update Product
+    // ✅ Update existing product
     async updateProduct(id, formData) {
       this.loading = true
       try {
-        const response = await axiosClient.post(`/products/${id}`, formData, {
+        const res = await axiosClient.post(`/products/${id}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -88,12 +77,37 @@ export const useProductStore = defineStore('product', {
             _method: 'PUT',
           },
         })
-        return response
+        return res
       } catch (error) {
-        console.error('Failed to update product:', error)
+        console.error('❌ Failed to update product:', error)
         throw error
       } finally {
         this.loading = false
+      }
+    },
+
+    // ✅ Delete product by ID
+    async deleteProduct(id) {
+      this.loading = true
+      try {
+        const res = await axiosClient.delete(`/products/${id}`)
+        return res
+      } catch (error) {
+        console.error('❌ Failed to delete product:', error)
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
+
+    // ✅ Optional: Get product by ID (useful for editing from URL)
+    async getProductById(id) {
+      try {
+        const res = await axiosClient.get(`/products/${id}`)
+        return res.data.data
+      } catch (error) {
+        console.error(`❌ Failed to fetch product ID ${id}:`, error)
+        throw error
       }
     },
   },

@@ -1,7 +1,7 @@
-<!-- ✅ Products.vue -->
+<!-- Products.vue -->
 <template>
-  <section>
-    <div class="flex items-center justify-between">
+  <section class="flex flex-col">
+    <div class="flex items-center justify-between mb-4">
       <div class="text-3xl font-semibold">Products</div>
       <button class="btn btn-primary text-white" @click="showAddProductModal">
         Add new Product
@@ -9,7 +9,10 @@
     </div>
 
     <ProductModal ref="modal" :product="currentProduct" :key="currentProduct.id ?? 'new'" />
-    <ProductsTable :onEdit="editProduct" />
+
+    <div class="flex-1 overflow-auto">
+      <ProductsTable :onEdit="editProduct" />
+    </div>
   </section>
 </template>
 
@@ -28,6 +31,9 @@ const currentProduct = ref({
   images: [],
   description: '',
   price: '',
+  category_id: '',
+  flash_sale_start: '',
+  flash_sale_end: '',
 })
 
 onMounted(() => {
@@ -41,17 +47,27 @@ function showAddProductModal() {
     images: [],
     description: '',
     price: '',
+    category_id: '',
+    flash_sale_start: '',
+    flash_sale_end: '',
   }
   modal.value?.openModal()
 }
 
-async function editProduct(product) {
-  currentProduct.value = JSON.parse(
-    JSON.stringify({
-      ...product,
-      images: product.images ?? [],
-    }),
-  )
+async function editProduct(p) {
+  currentProduct.value = {
+    id: p.id,
+    title: p.title ?? '',
+    images: p.images ?? [],
+    description: p.description ?? '',
+    price: p.price ?? '',
+    category_id: p.category_id ?? '',
+
+    //  Properly format datetime-local
+    flash_sale_start: p.flash_sale_start ? p.flash_sale_start.slice(0, 16).replace(' ', 'T') : '',
+    flash_sale_end: p.flash_sale_end ? p.flash_sale_end.slice(0, 16).replace(' ', 'T') : '',
+  }
+
   await nextTick()
   modal.value?.openModal()
 }

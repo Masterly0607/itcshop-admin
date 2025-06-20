@@ -95,7 +95,7 @@
 </template>
 
 <script setup>
-import GuestLayout from '@/components/GuestLayout.vue'
+import GuestLayout from '@/components/layouts/GuestLayout.vue'
 import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'

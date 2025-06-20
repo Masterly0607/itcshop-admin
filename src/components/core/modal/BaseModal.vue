@@ -1,5 +1,5 @@
 <template>
-  <dialog ref="modalRef" class="modal">
+  <dialog ref="modal" class="modal">
     <div class="modal-box">
       <div class="flex justify-between items-center mb-4">
         <h3 class="font-bold text-lg">{{ title }}</h3>
@@ -20,13 +20,13 @@ const props = defineProps({
   },
 })
 
-const modalRef = ref(null)
+const modal = ref(null)
 
 function openModal() {
-  modalRef.value?.showModal()
+  modal.value?.showModal()
 }
 function closeModal() {
-  modalRef.value?.close()
+  modal.value?.close()
 }
 
 defineExpose({ openModal, closeModal })

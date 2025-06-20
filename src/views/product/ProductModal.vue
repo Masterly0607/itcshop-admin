@@ -8,7 +8,28 @@
 
       <form v-else class="flex flex-col gap-3" @submit.prevent="onSubmit">
         <!-- Title -->
-        <input type="text" placeholder="Title" class="input w-full" v-model="product.title" />
+        <div>
+          <input
+            type="text"
+            placeholder="Title"
+            class="input input-bordered w-full"
+            v-model="product.title"
+          />
+          <span v-if="errors.title" class="text-red-500 text-sm">{{ errors.title[0] }}</span>
+        </div>
+
+        <!-- Category -->
+        <div>
+          <select class="select select-bordered w-full" v-model="product.category_id">
+            <option disabled value="">-- Select Category --</option>
+            <option v-for="cat in categoryStore.categories" :key="cat.id" :value="cat.id">
+              {{ cat.name }}
+            </option>
+          </select>
+          <span v-if="errors.category_id" class="text-red-500 text-sm">{{
+            errors.category_id[0]
+          }}</span>
+        </div>
 
         <!-- Image Preview -->
         <div v-if="previewImages.length" class="mb-3">
@@ -30,46 +51,84 @@
         </div>
 
         <!-- Upload -->
-        <input
-          type="file"
-          class="file-input w-full"
-          multiple
-          accept="image/*"
-          @change="handleImageUpload"
-        />
+        <div>
+          <input
+            type="file"
+            class="file-input w-full"
+            multiple
+            accept="image/*"
+            @change="handleImageUpload"
+          />
+          <span v-if="errors['images.0']" class="text-red-500 text-sm">{{
+            errors['images.0'][0]
+          }}</span>
+        </div>
 
         <!-- Description -->
-        <textarea
-          rows="4"
-          placeholder="Description"
-          class="textarea textarea-bordered w-full"
-          v-model="product.description"
-        ></textarea>
+        <div>
+          <textarea
+            rows="4"
+            placeholder="Description"
+            class="textarea textarea-bordered w-full"
+            v-model="product.description"
+          ></textarea>
+          <span v-if="errors.description" class="text-red-500 text-sm">{{
+            errors.description[0]
+          }}</span>
+        </div>
 
         <!-- Price -->
-        <label class="input w-full">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="size-6"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
+        <div>
+          <label class="input input-bordered w-full flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
               stroke-width="1.5"
-              d="M12 6v12m-3-2.818L12 18l3-2.818m0-6.364L12 6l-3 2.818"
-            />
-          </svg>
-          <input type="number" required placeholder="Price" v-model.number="product.price" />
-        </label>
+              stroke="currentColor"
+              class="size-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 6v12m-3-2.818L12 18l3-2.818m0-6.364L12 6l-3 2.818"
+              />
+            </svg>
+            <input type="number" required placeholder="Price" v-model.number="product.price" />
+          </label>
+          <span v-if="errors.price" class="text-red-500 text-sm">{{ errors.price[0] }}</span>
+        </div>
+
+        <!-- Flash Sale Start -->
+        <div>
+          <label class="label font-medium">Flash Sale Start</label>
+          <input
+            type="datetime-local"
+            class="input input-bordered w-full"
+            v-model="product.flash_sale_start"
+          />
+          <span v-if="errors.flash_sale_start" class="text-red-500 text-sm">{{
+            errors.flash_sale_start[0]
+          }}</span>
+        </div>
+
+        <!-- Flash Sale End -->
+        <div>
+          <label class="label font-medium">Flash Sale End</label>
+          <input
+            type="datetime-local"
+            class="input input-bordered w-full"
+            v-model="product.flash_sale_end"
+          />
+          <span v-if="errors.flash_sale_end" class="text-red-500 text-sm">{{
+            errors.flash_sale_end[0]
+          }}</span>
+        </div>
 
         <!-- Actions -->
         <div class="flex justify-end gap-2 mt-5">
-          <div class="btn" @click="closeModal()">Cancel</div>
-          <input type="submit" value="Submit" class="btn btn-primary text-white" />
+          <button type="button" class="btn" @click="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary text-white">Submit</button>
         </div>
       </form>
     </BaseModal>
@@ -77,16 +136,18 @@
 </template>
 
 <script setup>
-// your exact script — no change
 import SpinnerComponent from '@/components/core/SpinnerComponent.vue'
 import BaseModal from '@/components/core/modal/BaseModal.vue'
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useProductStore } from '@/stores/productStore'
+import { useCategoryStore } from '@/stores/categoryStore'
 
 const modalRef = ref(null)
 const loading = ref(false)
+const errors = ref({})
 
 const productStore = useProductStore()
+const categoryStore = useCategoryStore()
 const removedImageIds = ref([])
 
 const props = defineProps({
@@ -98,6 +159,9 @@ const props = defineProps({
       images: [],
       description: '',
       price: '',
+      category_id: '',
+      flash_sale_start: '',
+      flash_sale_end: '',
     }),
   },
 })
@@ -108,12 +172,20 @@ const product = ref({
   images: [],
   description: '',
   price: '',
+  category_id: '',
+  flash_sale_start: '',
+  flash_sale_end: '',
 })
 const previewImages = ref([])
 
 defineExpose({ openModal, closeModal })
 
+onMounted(() => {
+  categoryStore.fetchAll()
+})
+
 function openModal() {
+  errors.value = {}
   modalRef.value?.openModal()
 }
 function closeModal() {
@@ -129,6 +201,9 @@ watch(
       images: Array.isArray(newVal.images) ? [...newVal.images] : [],
       description: newVal.description ?? '',
       price: newVal.price ?? '',
+      category_id: newVal.category_id ?? '',
+      flash_sale_start: newVal.flash_sale_start ?? '',
+      flash_sale_end: newVal.flash_sale_end ?? '',
     }
     removedImageIds.value = []
     updatePreviewImages()
@@ -177,18 +252,27 @@ function resetForm() {
     images: [],
     description: '',
     price: '',
+    category_id: '',
+    flash_sale_start: '',
+    flash_sale_end: '',
   }
   previewImages.value = []
   removedImageIds.value = []
+  errors.value = {}
 }
 
 async function onSubmit() {
   try {
     loading.value = true
+    errors.value = {}
+
     const form = new FormData()
     form.append('title', product.value.title)
     form.append('description', product.value.description)
     form.append('price', product.value.price)
+    form.append('category_id', product.value.category_id)
+    form.append('flash_sale_start', product.value.flash_sale_start)
+    form.append('flash_sale_end', product.value.flash_sale_end)
 
     product.value.images.forEach((img, i) => {
       if (img instanceof File) {
@@ -210,7 +294,11 @@ async function onSubmit() {
     closeModal()
     resetForm()
   } catch (e) {
-    console.error('Failed to submit', e)
+    if (e.response?.status === 422) {
+      errors.value = e.response.data.errors || {}
+    } else {
+      console.error('Failed to submit', e)
+    }
   } finally {
     loading.value = false
   }
