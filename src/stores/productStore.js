@@ -65,21 +65,19 @@ export const useProductStore = defineStore('product', {
       }
     },
 
-    // ✅ Update existing product
+    // Update existing product
     async updateProduct(id, formData) {
       this.loading = true
       try {
-        const res = await axiosClient.post(`/products/${id}`, formData, {
+        const res = await axiosClient.post(`/products/${id}?_method=PUT`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
-          },
-          params: {
-            _method: 'PUT',
+            Accept: 'application/json',
           },
         })
         return res
       } catch (error) {
-        console.error('❌ Failed to update product:', error)
+        console.error(' Failed to update product:', error)
         throw error
       } finally {
         this.loading = false

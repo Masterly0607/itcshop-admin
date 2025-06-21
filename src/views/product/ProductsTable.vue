@@ -1,10 +1,11 @@
 <template>
+  <!-- Table Display -->
   <BaseTable
+    v-if="products.length"
     title="Products"
     :loading="productStore.loading"
     :search="search"
     :per-page="perPage"
-    :meta="meta"
     :columns="6"
     search-placeholder="Type here to Search Products"
     @update:search="updateSearch"
@@ -69,7 +70,7 @@
         <td class="border-b p-2 max-w-[200px] truncate">{{ product.title }}</td>
         <td class="border-b p-2">{{ product.price }}</td>
         <td class="border-b p-2">{{ product.updated_at }}</td>
-        <td class="border-b p-2">
+        <td class="border-b p-2 relative">
           <div class="dropdown dropdown-end">
             <button tabindex="0" role="button" class="btn btn-ghost btn-circle btn-sm">
               <svg
@@ -89,7 +90,7 @@
             </button>
             <ul
               tabindex="0"
-              class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-32"
+              class="dropdown-content z-[999] menu p-2 shadow bg-base-100 rounded-box w-32"
             >
               <li><a @click="$emit('edit', product)">Edit</a></li>
               <li><a @click="openDeleteModal(product.id)" class="text-red-500">Delete</a></li>
@@ -99,6 +100,9 @@
       </tr>
     </template>
   </BaseTable>
+
+  <!-- Empty state -->
+  <div v-else class="text-center py-16 text-gray-500 text-lg">No products found.</div>
 
   <DeleteModal ref="deleteModalRef" @confirm="deleteConfirmed" />
 </template>
@@ -114,7 +118,6 @@ import DeleteModal from '@/components/core/modal/DeleteModal.vue'
 
 const productStore = useProductStore()
 const products = computed(() => productStore.data)
-const meta = computed(() => productStore.meta)
 
 const perPage = ref(10)
 const search = ref('')

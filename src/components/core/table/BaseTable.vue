@@ -48,24 +48,6 @@
     </div>
 
     <!-- Pagination -->
-    <div v-if="meta" class="flex flex-wrap justify-between items-center mt-4 gap-2">
-      <span class="text-sm text-gray-500">
-        Showing from {{ meta.from }} to {{ meta.to }} of {{ meta.total }}
-      </span>
-      <div class="join">
-        <button
-          v-for="(link, i) in meta.links"
-          :key="i"
-          class="join-item btn btn-sm transition"
-          :class="{
-            'btn-disabled': !link.url,
-            'btn-active': link.active,
-          }"
-          v-html="link.label"
-          @click.prevent="$emit('page', link.url)"
-        />
-      </div>
-    </div>
   </div>
 </template>
 

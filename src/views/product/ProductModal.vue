@@ -91,9 +91,10 @@
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                d="M12 6v12m-3-2.818L12 18l3-2.818m0-6.364L12 6l-3 2.818"
+                d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
               />
             </svg>
+
             <input type="number" required placeholder="Price" v-model.number="product.price" />
           </label>
           <span v-if="errors.price" class="text-red-500 text-sm">{{ errors.price[0] }}</span>
@@ -195,16 +196,26 @@ function closeModal() {
 watch(
   () => props.product,
   (newVal) => {
+    console.log('🛠️ Editing product:', newVal)
+
+    const cloned = JSON.parse(JSON.stringify(newVal))
+    // ✅ fix reactive loss
+
     product.value = {
-      id: newVal.id ?? null,
-      title: newVal.title ?? '',
-      images: Array.isArray(newVal.images) ? [...newVal.images] : [],
-      description: newVal.description ?? '',
-      price: newVal.price ?? '',
-      category_id: newVal.category_id ?? '',
-      flash_sale_start: newVal.flash_sale_start ?? '',
-      flash_sale_end: newVal.flash_sale_end ?? '',
+      id: cloned.id ?? null,
+      title: cloned.title ?? '',
+      images: Array.isArray(cloned.images) ? [...cloned.images] : [],
+      description: cloned.description ?? '',
+      price: cloned.price ?? '',
+      category_id: cloned.category_id ? Number(cloned.category_id) : '',
+      flash_sale_start: cloned.flash_sale_start
+        ? new Date(cloned.flash_sale_start).toISOString().slice(0, 16)
+        : '',
+      flash_sale_end: cloned.flash_sale_end
+        ? new Date(cloned.flash_sale_end).toISOString().slice(0, 16)
+        : '',
     }
+
     removedImageIds.value = []
     updatePreviewImages()
   },
@@ -238,9 +249,21 @@ function handleImageUpload(e) {
 
 function removeImage(index) {
   const removed = product.value.images[index]
+
+  // ✅ Push ID if image is object with ID (like from DB)
   if (typeof removed === 'object' && removed.id) {
     removedImageIds.value.push(removed.id)
   }
+
+  // ✅ OR detect if image is string URL, then extract ID if available
+  if (typeof removed === 'string') {
+    // Find match in original product.images
+    const match = props.product.images.find((img) => img.image === removed)
+    if (match && match.id) {
+      removedImageIds.value.push(match.id)
+    }
+  }
+
   product.value.images.splice(index, 1)
   previewImages.value.splice(index, 1)
 }
@@ -297,7 +320,8 @@ async function onSubmit() {
     if (e.response?.status === 422) {
       errors.value = e.response.data.errors || {}
     } else {
-      console.error('Failed to submit', e)
+      console.error('❌ Failed to submit:', e)
+      alert('Something went wrong. Check server log or CORS settings.')
     }
   } finally {
     loading.value = false

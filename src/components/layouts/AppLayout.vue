@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-screen">
+  <div class="min-h-screen flex">
     <!-- Sidebar -->
     <Sidebar :sidebarOpened="sidebarOpened" />
 
