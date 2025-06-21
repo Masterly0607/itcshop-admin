@@ -29,7 +29,7 @@ function handleSidebarOpened() {
 }
 
 onMounted(() => {
-  useUserStore().getUser()
+  useUserStore().getUsers()
   handleSidebarOpened()
   window.addEventListener('resize', handleSidebarOpened)
 })

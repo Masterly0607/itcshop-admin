@@ -1,50 +1,86 @@
 import axiosClient from '@/axios'
 import { defineStore } from 'pinia'
-
 import router from '@/router'
+
 export const useUserStore = defineStore('user', {
   state: () => ({
     token: sessionStorage.getItem('TOKEN') || null,
     data: null,
     loading: false,
-    // why we need || '{}'? => if data is null, it will crash your server. Because JSON.parse(expects string). JSON.parse = Converts string → object
+    users: [],
   }),
+
   actions: {
+    // 🔐 Auth: Login
     async login(credentials) {
       try {
         const response = await axiosClient.post('/login', credentials)
         this.token = response.data.token
         this.data = response.data.user
 
-        // Save token to sessionStorage
         sessionStorage.setItem('TOKEN', this.token)
-        sessionStorage.setItem('USER', JSON.stringify(this.data)) // Converts object → string. Save to storage or send to server. We set this Content-Type: application/json when we send data to server. So, we need to convert js obj to json.
-
-        // Go to dashboard or home
+        sessionStorage.setItem('USER', JSON.stringify(this.data))
         router.push({ name: 'app.dashboard' })
       } catch (error) {
         console.error('Login error:', error)
-        throw error // let UI handle error message (e.g. toast)
+        throw error
       } finally {
         this.loading = false
       }
     },
 
+    // 🔓 Logout
     logout() {
       this.token = null
-      this.data = {}
+      this.data = null
       sessionStorage.removeItem('TOKEN')
+      sessionStorage.removeItem('USER')
       router.push({ name: 'login' })
     },
-    getUser() {
+
+    //  Get all users
+
+    async getUsers(params) {
       this.loading = true
-      const user = sessionStorage.getItem('USER')
-      if (user) {
-        this.data = JSON.parse(user)
-      } else {
-        this.data = null
+      try {
+        const res = await axiosClient.get('/users', { params })
+        this.users = res.data // for backup or use elsewhere
+        return res.data // 🔁 return the paginated response
+      } catch (err) {
+        console.error('Failed to fetch users:', err)
+      } finally {
+        this.loading = false
       }
-      this.loading = false
+    },
+
+    // ➕ Create user
+    async createUser(userData) {
+      try {
+        await axiosClient.post('/users', userData)
+      } catch (err) {
+        console.error('Create user failed:', err)
+        throw err
+      }
+    },
+
+    // ✏️ Update user
+    async updateUser(id, userData) {
+      try {
+        await axiosClient.put(`/users/${id}`, userData)
+      } catch (err) {
+        console.error('Update user failed:', err)
+        throw err
+      }
+    },
+
+    // 🗑 Delete user
+    async deleteUser(id) {
+      try {
+        await axiosClient.delete(`/users/${id}`)
+      } catch (err) {
+        console.error('Delete user failed:', err)
+        throw err
+      }
     },
   },
 })
