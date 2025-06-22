@@ -104,7 +104,7 @@
   <!-- Empty state -->
   <div v-else class="text-center py-16 text-gray-500 text-lg">No products found.</div>
 
-  <DeleteModal ref="deleteModalRef" item-type="product" @confirm="confirmDeleteProduct" />
+  <DeleteModal ref="deleteModalRef" item-type="product" @confirm="deleteConfirmed" />
 </template>
 
 <script setup>

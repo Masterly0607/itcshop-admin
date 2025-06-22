@@ -11,7 +11,7 @@ export const useUserStore = defineStore('user', {
   }),
 
   actions: {
-    // 🔐 Auth: Login
+    //  Auth: Login
     async login(credentials) {
       try {
         const response = await axiosClient.post('/login', credentials)
@@ -29,7 +29,7 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    // 🔓 Logout
+    //  Logout
     logout() {
       this.token = null
       this.data = null
@@ -45,7 +45,7 @@ export const useUserStore = defineStore('user', {
       try {
         const res = await axiosClient.get('/users', { params })
         this.users = res.data // for backup or use elsewhere
-        return res.data // 🔁 return the paginated response
+        return res.data // return the paginated response
       } catch (err) {
         console.error('Failed to fetch users:', err)
       } finally {
@@ -53,7 +53,7 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    // ➕ Create user
+    //  Create user
     async createUser(userData) {
       try {
         await axiosClient.post('/users', userData)
@@ -63,7 +63,7 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    // ✏️ Update user
+    //  Update user
     async updateUser(id, userData) {
       try {
         await axiosClient.put(`/users/${id}`, userData)
@@ -73,7 +73,7 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    // 🗑 Delete user
+    //  Delete user
     async deleteUser(id) {
       try {
         await axiosClient.delete(`/users/${id}`)

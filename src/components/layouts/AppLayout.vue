@@ -1,10 +1,10 @@
 <template>
-  <div class="min-h-screen flex">
+  <div class="h-screen flex">
     <!-- Sidebar -->
     <Sidebar :sidebarOpened="sidebarOpened" />
 
     <!-- Main content -->
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col h-screen">
       <Navbar @toggle-sidebar="toggleSidebar" />
       <main class="flex-1 p-6 overflow-auto">
         <RouterView />

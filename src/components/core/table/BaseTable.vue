@@ -34,7 +34,7 @@
     </div>
 
     <!-- Table -->
-    <div class="overflow-x-auto">
+    <div class="overflow-auto h-full">
       <table class="w-full border-collapse">
         <thead class="bg-gray-50 text-sm text-gray-700 font-semibold">
           <tr>
