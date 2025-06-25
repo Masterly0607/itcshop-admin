@@ -33,7 +33,7 @@ import {
   TruckIcon,
   UsersIcon,
   TagIcon,
-} from '@heroicons/vue/24/solid'
+} from '@heroicons/vue/24/solid/index.js'
 defineProps({ sidebarOpened: Boolean })
 const $route = useRoute()
 
@@ -47,6 +47,13 @@ const navItems = [
     label: 'Categories',
   },
   { name: 'app.orders', to: { name: 'app.orders' }, icon: TruckIcon, label: 'Orders' },
+  {
+    name: 'app.customers',
+    to: { name: 'app.customers' },
+    icon: UsersIcon,
+    label: 'Customers',
+  },
+
   { name: 'app.users', to: { name: 'app.users' }, icon: UsersIcon, label: 'Users' },
   { name: 'app.coupons', to: { name: 'app.coupons' }, icon: TagIcon, label: 'Coupons' },
 ]
