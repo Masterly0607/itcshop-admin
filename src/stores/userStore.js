@@ -14,7 +14,7 @@ export const useUserStore = defineStore('user', {
     //  Auth: Login
     async login(credentials) {
       try {
-        const response = await axiosClient.post('admin/login', credentials)
+        const response = await axiosClient.post('/admin/login', credentials)
         this.token = response.data.token
         this.data = response.data.user
 
