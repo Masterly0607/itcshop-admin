@@ -12,8 +12,6 @@ axiosClient.interceptors.request.use((config) => {
   const userStore = useUserStore()
 
   config.headers.Authorization = `Bearer ${userStore.token}`
-  config.headers['Content-Type'] = 'application/json' //
-  console.log('🧪 Final Request URL:', config.baseURL + config.url)
   return config
 })
 
