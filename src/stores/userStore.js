@@ -14,7 +14,7 @@ export const useUserStore = defineStore('user', {
     //  Auth: Login
     async login(credentials) {
       try {
-        const response = await axiosClient.post('/admin/login', credentials)
+        const response = await axiosClient.post('/login', credentials)
         this.token = response.data.token
         this.data = response.data.user
 
@@ -43,7 +43,7 @@ export const useUserStore = defineStore('user', {
     async getUsers(params) {
       this.loading = true
       try {
-        const res = await axiosClient.get('admin/users', { params })
+        const res = await axiosClient.get('/users', { params })
         this.users = res.data // for backup or use elsewhere
         return res.data // return the paginated response
       } catch (err) {
@@ -56,7 +56,7 @@ export const useUserStore = defineStore('user', {
     //  Create user
     async createUser(userData) {
       try {
-        await axiosClient.post('admin/users', userData)
+        await axiosClient.post('/users', userData)
       } catch (err) {
         console.error('Create user failed:', err)
         throw err
@@ -66,7 +66,7 @@ export const useUserStore = defineStore('user', {
     //  Update user
     async updateUser(id, userData) {
       try {
-        await axiosClient.put(`admin/users/${id}`, userData)
+        await axiosClient.put(`/users/${id}`, userData)
       } catch (err) {
         console.error('Update user failed:', err)
         throw err
@@ -76,7 +76,7 @@ export const useUserStore = defineStore('user', {
     //  Delete user
     async deleteUser(id) {
       try {
-        await axiosClient.delete(`admin/users/${id}`)
+        await axiosClient.delete(`/users/${id}`)
       } catch (err) {
         console.error('Delete user failed:', err)
         throw err
