@@ -135,7 +135,6 @@
     </BaseModal>
   </section>
 </template>
-
 <script setup>
 import SpinnerComponent from '@/components/core/SpinnerComponent.vue'
 import BaseModal from '@/components/core/modal/BaseModal.vue'
@@ -199,7 +198,6 @@ watch(
     console.log('🛠️ Editing product:', newVal)
 
     const cloned = JSON.parse(JSON.stringify(newVal))
-    // ✅ fix reactive loss
 
     product.value = {
       id: cloned.id ?? null,
@@ -235,29 +233,30 @@ function updatePreviewImages() {
 
 function handleImageUpload(e) {
   const files = Array.from(e.target.files || [])
-  const existing = product.value.images.filter((img) => img instanceof File)
-  const newFiles = files.filter(
-    (file) => !existing.some((f) => f.name === file.name && f.size === file.size),
-  )
 
-  product.value.images = [
-    ...product.value.images.filter((img) => typeof img === 'string' || img instanceof File),
-    ...newFiles,
-  ]
+  if (!product.value.id) {
+    // ✅ For create: only accept newly uploaded files
+    product.value.images = [...files]
+  } else {
+    // ✅ For update: allow adding to existing images
+    const existing = product.value.images.filter((img) => img instanceof File)
+    const newFiles = files.filter(
+      (file) => !existing.some((f) => f.name === file.name && f.size === file.size),
+    )
+    product.value.images = [...product.value.images, ...newFiles]
+  }
+
   updatePreviewImages()
 }
 
 function removeImage(index) {
   const removed = product.value.images[index]
 
-  // ✅ Push ID if image is object with ID (like from DB)
   if (typeof removed === 'object' && removed.id) {
     removedImageIds.value.push(removed.id)
   }
 
-  // ✅ OR detect if image is string URL, then extract ID if available
   if (typeof removed === 'string') {
-    // Find match in original product.images
     const match = props.product.images.find((img) => img.image === removed)
     if (match && match.id) {
       removedImageIds.value.push(match.id)
@@ -297,10 +296,15 @@ async function onSubmit() {
     form.append('flash_sale_start', product.value.flash_sale_start)
     form.append('flash_sale_end', product.value.flash_sale_end)
 
-    product.value.images.forEach((img, i) => {
-      if (img instanceof File) {
-        form.append(`images[${i}]`, img)
-      }
+    const fileImages = product.value.images.filter((img) => img instanceof File)
+
+    if (fileImages.length === 0 && !product.value.id) {
+      errors.value['images.0'] = ['At least one image is required.']
+      return
+    }
+
+    fileImages.forEach((file, i) => {
+      form.append(`images[${i}]`, file)
     })
 
     if (product.value.id && removedImageIds.value.length > 0) {
