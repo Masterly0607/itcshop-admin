@@ -33,7 +33,7 @@ import {
   TruckIcon,
   UsersIcon,
   TagIcon,
-} from '@heroicons/vue/24/solid'
+} from '@heroicons/vue/24/solid/index.js'
 defineProps({ sidebarOpened: Boolean })
 const $route = useRoute()
 

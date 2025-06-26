@@ -10,6 +10,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@heroicons/vue": "^2.2.0",
     "@preline/toggle-password": "^3.0.0",
     "@tailwindcss/vite": "^4.1.7",
     "axios": "^1.9.0",
