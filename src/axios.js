@@ -4,7 +4,7 @@ import { useUserStore } from './stores/userStore'
 import router from '@/router'
 
 const axiosClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL.replace(/\/+$/, ''),
 })
 
 // Registers a middleware that runs before every request. Before Axios sends anything to the server, let me add the token.
